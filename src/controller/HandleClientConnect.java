@@ -4,15 +4,20 @@ import model.Question;
 
 import java.io.*;
 import java.net.Socket;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class HandleClientConnect extends Thread{
+public class HandleClientConnect extends Thread  {
   private Socket socket;
   private ObjectInputStream objectInputStream;
   private ObjectOutputStream objectOutputStream;
   private DataInputStream dataInputStream;
   private DataOutputStream dataOutputStream;
   private ArrayList<Question> arrayList;
+  private DBConnection dbConnection;
+  private DBQuery dbQuery;
+
 
   public HandleClientConnect(Socket socket){
     this.socket = socket;
@@ -21,20 +26,26 @@ public class HandleClientConnect extends Thread{
   private void loginClient(){
 //    DBConnection dBConnection = new DBConnection(Constant.DBURL, Constant.USER, Constant.PASSWORD);
 //    dBConnection.execute();
-// Fake data
-
   }
 
   @Override
   public void run() {
+    dbConnection = DBConnection.getInstance();
+    try {
+      dbConnection.connect(Constant.DBURL, Constant.USER, Constant.PASSWORD);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    try {
+      dbQuery = new DBQuery(dbConnection.getConnection());
+      String query = "SELECT * FROM user;";
+      ResultSet rs = dbQuery.execQuery(query);
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
     try {
       arrayList = new ArrayList<Question>();
       objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-      arrayList.add(new Question("Thanh Nam 1"));
-      arrayList.add(new Question("Thanh Nam 2"));
-      arrayList.add(new Question("Thanh Nam 3"));
-      arrayList.add(new Question("Thanh Nam 4"));
-      arrayList.add(new Question("Thanh Nam 5"));
       System.out.println(arrayList);
       objectOutputStream.writeObject(arrayList);
     } catch (IOException e) {

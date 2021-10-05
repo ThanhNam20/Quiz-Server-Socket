@@ -1,16 +1,17 @@
 package controller;
 
-import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
 public class Server {
   public static ArrayList<Socket> listSocket;
+  private DBConnection dbConnection;
   public Server() {}
-  private void execute() throws IOException {
+  private void execute() throws Exception {
     int count = 0;
     ServerSocket serverSocket = new ServerSocket(Constant.SERVERPORT);
+
     System.out.println("Listening...");
     while(true){
       Socket socket = serverSocket.accept();
@@ -25,7 +26,7 @@ public class Server {
     }
   }
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) throws Exception {
     listSocket = new ArrayList<>();
     Server server = new Server();
     server.execute();

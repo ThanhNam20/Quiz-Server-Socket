@@ -2,29 +2,32 @@ package controller;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 
 public class DBConnection {
-  private String dbURL;
-  private String user;
-  private String password;
+  static DBConnection INSTANCE = null;
+  Connection connection;
+  String url = null, username = null, password = null;
 
-  public DBConnection(String dbURL, String user, String password) {
-    this.dbURL = dbURL;
-    this.user = user;
-    this.password = password;
+  private DBConnection() {
   }
 
-  public void execute (){
-    try{
-      Connection connection = DriverManager.getConnection(dbURL, user, password);
-      if(connection != null) {
-        System.out.println("Connect successfully");
-      }
+  public void connect(String host, String username, String password) throws Exception {
+    this.url = host;
+    this.username = username;
+    this.password = password;
+    this.connection = DriverManager.getConnection(this.url, this.username, this.password);
+  }
 
-    }catch(SQLException ex){
-      System.out.println(ex);
+  public Connection getConnection() {
+    System.out.println("Success!");
+    return this.connection;
+  }
+
+  public static DBConnection getInstance() {
+    if (DBConnection.INSTANCE == null) {
+      DBConnection.INSTANCE = new DBConnection();
     }
+    return DBConnection.INSTANCE;
   }
 
 }
