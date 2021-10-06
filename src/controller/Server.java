@@ -22,7 +22,6 @@ public class Server {
         HandleClientConnect handleClientConnect = new HandleClientConnect(socket);
         handleClientConnect.start();
       }
-
     }
   }
 

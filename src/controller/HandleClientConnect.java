@@ -40,6 +40,7 @@ public class HandleClientConnect extends Thread  {
       dbQuery = new DBQuery(dbConnection.getConnection());
       String query = "SELECT * FROM user;";
       ResultSet rs = dbQuery.execQuery(query);
+      System.out.println(rs);
     } catch (SQLException e) {
       e.printStackTrace();
     }
