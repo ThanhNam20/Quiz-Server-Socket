@@ -9,7 +9,7 @@ public class Answer implements Serializable {
   private boolean is_true;
 
   public Answer(String answer_title, boolean is_true) {
-    this.answer_id = UUID.randomUUID().toString();
+    this.answer_id = answer_id;
     this.answer_title = answer_title;
     this.is_true = is_true;
   }
