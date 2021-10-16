@@ -1,11 +1,13 @@
 package controller;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import model.Question;
 import model.Topic;
 import model.User;
 
 import java.io.*;
+import java.lang.reflect.Type;
 import java.net.Socket;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -44,7 +46,6 @@ public class HandleClientConnect implements Runnable  {
       e.printStackTrace();
     }
   }
-
   public void sendDataRoom() throws Exception {
     ArrayList<Topic> arrayList = new ArrayList<>();
     dbConnection.connect(Constant.DBURL, Constant.USER, Constant.PASSWORD);
@@ -56,7 +57,6 @@ public class HandleClientConnect implements Runnable  {
     }
     Gson gson = new Gson();
     String roomData = gson.toJson(arrayList);
-    System.out.println(roomData);
     dataOutputStream.writeUTF(roomData);
     dataOutputStream.flush();
     rs.close();
