@@ -22,7 +22,6 @@ public class Server {
     try  {
       ServerSocket serverSocket = new ServerSocket(Constant.SERVERPORT);
       System.out.println("Listening...");
-
       while(!(serverSocket.isClosed())){
         Socket socket = serverSocket.accept();
         System.out.println(socket + "connected");

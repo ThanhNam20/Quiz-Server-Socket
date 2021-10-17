@@ -2,7 +2,10 @@ package controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.sun.javaws.IconUtil;
+
 import model.Question;
+import model.RoomList;
 import model.Topic;
 import model.User;
 
@@ -16,14 +19,13 @@ import java.util.List;
 
 public class HandleClientConnect implements Runnable  {
   private Socket socket;
-  private ObjectInputStream objectInputStream;
-  private ObjectOutputStream objectOutputStream;
   private DataInputStream dataInputStream;
   private DataOutputStream dataOutputStream;
-  private ArrayList<Question> arrayList;
+  private ArrayList<Question> questionArrayList;
   private DBConnection dbConnection;
   private DBQuery dbQuery;
   private User user;
+  private RoomList roomList;
 
   public HandleClientConnect(Socket socket) throws IOException {
     this.socket = socket;
@@ -47,19 +49,12 @@ public class HandleClientConnect implements Runnable  {
     }
   }
   public void sendDataRoom() throws Exception {
-    ArrayList<Topic> arrayList = new ArrayList<>();
-    dbConnection.connect(Constant.DBURL, Constant.USER, Constant.PASSWORD);
-    dbQuery = new DBQuery(dbConnection.getConnection());
-    String query = "select * from topic";
-    ResultSet rs = dbQuery.execQuery(query);
-    while(rs.next()) {
-      arrayList.add(new Topic(rs.getInt("topic_id"), rs.getString("topic_name"),rs.getInt("topic_question_count")));
-    }
+    RoomList roomList = new RoomList();
+    System.out.println(roomList.getRoomArrayList());
     Gson gson = new Gson();
-    String roomData = gson.toJson(arrayList);
+    String roomData = gson.toJson(roomList.getRoomArrayList());
     dataOutputStream.writeUTF(roomData);
     dataOutputStream.flush();
-    rs.close();
   }
 
   @Override

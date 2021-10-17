@@ -14,7 +14,6 @@ public class User implements Serializable {
     this.userName = userName;
     this.userPoint = userPoint;
     this.userRule = userRule;
-
   }
 
   public String getUserId() {

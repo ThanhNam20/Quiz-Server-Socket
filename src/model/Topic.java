@@ -36,5 +36,4 @@ public class Topic implements Serializable {
     this.topicQuestionCount = topicQuestionCount;
   }
 
-
 }
