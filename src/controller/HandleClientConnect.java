@@ -26,13 +26,14 @@ public class HandleClientConnect implements Runnable  {
   private DBQuery dbQuery;
   private User user;
   private RoomList roomList;
+  private ArrayList<User> userArrayList;
 
   public HandleClientConnect(Socket socket) throws IOException {
     this.socket = socket;
     dataInputStream = new DataInputStream(socket.getInputStream());
     dataOutputStream = new DataOutputStream(socket.getOutputStream());
     dbConnection = DBConnection.getInstance();
-
+    userArrayList = new ArrayList<>();
   }
 
   public void addUser (String userName) throws Exception {
@@ -40,10 +41,15 @@ public class HandleClientConnect implements Runnable  {
       dbConnection.connect(Constant.DBURL, Constant.USER, Constant.PASSWORD);
       dbQuery = new DBQuery(dbConnection.getConnection());
       User user = new User(userName, 0, "student");
-      String query = "";
-      ResultSet rs = dbQuery.execQuery(query);
-      rs.close();
-//      this.sendDataRoom();
+      userArrayList.add(user);
+
+      Gson gson = new Gson();
+      String userData = gson.toJson(user);
+      dataOutputStream.writeUTF(userData);
+      dataOutputStream.flush();
+//      String query = "";
+//      ResultSet rs = dbQuery.execQuery(query);
+//      rs.close();
     } catch (SQLException e) {
       e.printStackTrace();
     }
@@ -67,7 +73,7 @@ public class HandleClientConnect implements Runnable  {
           System.out.println(socket + "disconected");
           socket.close();
         }else {
-//          this.addUser(userName);
+          this.addUser(userName);
           this.sendDataRoom();
         }
       }
