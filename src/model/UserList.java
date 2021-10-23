@@ -3,14 +3,14 @@ package model;
 import java.util.ArrayList;
 
 public class UserList {
-  public ArrayList<User> userArrayList;
+  private ArrayList<User> userArrayList;
+
+  public UserList() {
+    userArrayList = new ArrayList<>();
+  }
 
   public ArrayList<User> getUserArrayList() {
     return userArrayList;
-  }
-
-  public void setUserArrayList(ArrayList<User> userArrayList) {
-    this.userArrayList = userArrayList;
   }
 
   public void addUser(User user){

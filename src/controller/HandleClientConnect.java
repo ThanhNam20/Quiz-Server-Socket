@@ -20,9 +20,9 @@ public class HandleClientConnect implements Runnable  {
   private DBConnection dbConnection;
   private DBQuery dbQuery;
   private User user;
-  private UserList userList;
   private Gson gson;
   private ClientRequest clientRequest;
+  private UserList userList;
   public HandleClientConnect(Socket socket) throws IOException {
     this.socket = socket;
     dataInputStream = new DataInputStream(socket.getInputStream());
@@ -37,7 +37,7 @@ public class HandleClientConnect implements Runnable  {
     try {
       while(true ){
         String jsonData = dataInputStream.readUTF();
-        clientAction(jsonData, dataOutputStream);
+        clientAction(jsonData);
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -54,7 +54,7 @@ public class HandleClientConnect implements Runnable  {
     }
   }
 
-  public void clientAction(String jsonData, DataOutputStream dataOutputStream) throws IOException {
+  public void clientAction(String jsonData) throws IOException {
     Type clientRequestObject = new TypeToken<ClientRequest>(){}.getType();
     clientRequest = gson.fromJson(jsonData,clientRequestObject);
     Integer clientCode = clientRequest.getCode();
@@ -69,13 +69,11 @@ public class HandleClientConnect implements Runnable  {
       case (Constant.HANDLE_CLIENT_JOIN_ROOM):
         String userId = params[0];
         String roomId = params[1];
-
     }
   }
 
   public void addUser (String userName, DataOutputStream dataOutputStream) throws IOException {
     try {
-      userList = new UserList();
 //      dbConnection.connect(Constant.DBURL, Constant.USER, Constant.PASSWORD);
 //      dbQuery = new DBQuery(dbConnection.getConnection());
       User user = new User(userName, 0, "student");
@@ -83,13 +81,15 @@ public class HandleClientConnect implements Runnable  {
       String userData = gson.toJson(user);
       dataOutputStream.writeUTF(userData);
       dataOutputStream.flush();
-      // Send list user connect
 
-      userList.addUser(user);
-      System.out.println(userList.getUserArrayList());
-      String userDataArray = gson.toJson(userList.getUserArrayList());
-      dataOutputStream.writeUTF(userDataArray);
-      dataOutputStream.flush();
+      // Send list users connect
+      Server.userLists.addUser(user);
+      System.out.println(Server.userLists.getUserArrayList());
+
+//      System.out.println(userList.getUserArrayList());
+//      String userDataArray = gson.toJson(userList.getUserArrayList());
+//      dataOutputStream.writeUTF(userDataArray);
+//      dataOutputStream.flush();
 
 //      String query = "";
 //      ResultSet rs = dbQuery.execQuery(query);
@@ -99,8 +99,8 @@ public class HandleClientConnect implements Runnable  {
     }
   }
   public void sendDataRoom() throws Exception {
-    System.out.println(Server.listRooms);
-    String roomData = gson.toJson(Server.listRooms);
+    System.out.println(Server.roomLists.getRoomArrayList());
+    String roomData = gson.toJson(Server.roomLists.getRoomArrayList());
     dataOutputStream.writeUTF(roomData);
     dataOutputStream.flush();
   }
