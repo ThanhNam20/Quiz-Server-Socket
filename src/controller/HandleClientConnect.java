@@ -35,7 +35,7 @@ public class HandleClientConnect implements Runnable  {
   @Override
   public void run() {
     try {
-      while(true ){
+      while(true){
         String jsonData = dataInputStream.readUTF();
         clientAction(jsonData);
       }
@@ -64,7 +64,7 @@ public class HandleClientConnect implements Runnable  {
     switch(clientCode){
       case(Constant.ADD_USER):
         String userName = params[0];
-        this.addUser(userName, dataOutputStream);
+        this.addUser(userName);
         break;
       case (Constant.HANDLE_CLIENT_JOIN_ROOM):
         String userId = params[0];
@@ -72,7 +72,7 @@ public class HandleClientConnect implements Runnable  {
     }
   }
 
-  public void addUser (String userName, DataOutputStream dataOutputStream) throws IOException {
+  public void addUser (String userName) throws IOException {
     try {
 //      dbConnection.connect(Constant.DBURL, Constant.USER, Constant.PASSWORD);
 //      dbQuery = new DBQuery(dbConnection.getConnection());
@@ -84,7 +84,9 @@ public class HandleClientConnect implements Runnable  {
 
       // Send list users connect
       Server.userLists.addUser(user);
-      System.out.println(Server.userLists.getUserArrayList());
+
+      // Send room data
+      sendDataRoom();
 
 //      System.out.println(userList.getUserArrayList());
 //      String userDataArray = gson.toJson(userList.getUserArrayList());
@@ -95,6 +97,8 @@ public class HandleClientConnect implements Runnable  {
 //      ResultSet rs = dbQuery.execQuery(query);
 //      rs.close();
     } catch (IOException e) {
+      e.printStackTrace();
+    } catch (Exception e) {
       e.printStackTrace();
     }
   }
