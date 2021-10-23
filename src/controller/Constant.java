@@ -9,4 +9,14 @@ public class Constant {
    public final static String SERVER_ADDRESS = "localhost";
    public final static Integer MIN_CLIENT_CONNECT = 2;
 
+   public final static int ADD_USER = 1;
+   public final static int HANDLE_CLIENT_JOIN_ROOM = 2;
+//   public final static Integer ADD_USER = 3;
+//   public final static Integer ADD_USER = 4;
+//   public final static Integer ADD_USER = 5;
+//   public final static Integer ADD_USER = 6;
+//   public final static Integer ADD_USER = 7;
+//   public final static Integer ADD_USER = 8;
+//   public final static Integer ADD_USER = 9;
+//   public final static Integer ADD_USER = 9;
 }
