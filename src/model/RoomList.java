@@ -13,14 +13,10 @@ public class RoomList {
   private DBQuery dbQuery;
 
   public RoomList() throws Exception {
-    this.roomArrayList = new ArrayList<Topic>();
+    roomArrayList = new ArrayList<>();
     dbConnection = DBConnection.getInstance();
     dbQuery = new DBQuery(dbConnection.getConnection());
     this.getRoomData();
-  }
-
-  public RoomList(ArrayList<Topic> roomArrayList) {
-    this.roomArrayList = roomArrayList;
   }
 
   public void getRoomData() throws  Exception{
