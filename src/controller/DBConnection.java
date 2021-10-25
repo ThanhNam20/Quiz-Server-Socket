@@ -19,7 +19,7 @@ public class DBConnection {
   }
 
   public Connection getConnection() {
-    System.out.println("Success!");
+//    System.out.println("Success!");
     return this.connection;
   }
 

@@ -1,11 +1,13 @@
 package model;
 
-import controller.Constant;
+import constant.Constant;
 import controller.DBConnection;
 import controller.DBQuery;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class RoomList {
   private ArrayList<Topic> roomArrayList;

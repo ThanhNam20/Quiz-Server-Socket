@@ -7,13 +7,11 @@ public class User implements Serializable {
   private String userId;
   private String userName;
   private Integer userPoint;
-  private String userRule;
 
-  public User(String userName, Integer userPoint, String userRule) {
+  public User(String userName, Integer userPoint) {
     this.userId = UUID.randomUUID().toString().replace("-", "");;
     this.userName = userName;
     this.userPoint = userPoint;
-    this.userRule = userRule;
   }
 
   public String getUserId() {
@@ -40,11 +38,4 @@ public class User implements Serializable {
     this.userPoint = userPoint;
   }
 
-  public String getUserRule() {
-    return userRule;
-  }
-
-  public void setUserRule(String userRule) {
-    this.userRule = userRule;
-  }
 }

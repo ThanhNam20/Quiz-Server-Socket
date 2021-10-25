@@ -2,6 +2,8 @@ package controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import constant.Constant;
+import constant.RequestCode;
 import model.*;
 
 import java.io.DataInputStream;
@@ -9,7 +11,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.Socket;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class HandleClientConnect implements Runnable  {
@@ -19,15 +20,17 @@ public class HandleClientConnect implements Runnable  {
   private ArrayList<Question> questionArrayList;
   private DBConnection dbConnection;
   private DBQuery dbQuery;
-  private User user;
+  private User currentUser;
   private UserList userList;
   private Gson gson;
   private ClientRequest clientRequest;
-  public HandleClientConnect(Socket socket) throws IOException {
+  RoomManager clientRoomManager;
+
+  public HandleClientConnect(Socket socket, RoomManager roomManager) throws IOException {
     this.socket = socket;
+    this.clientRoomManager = roomManager;
     dataInputStream = new DataInputStream(socket.getInputStream());
     dataOutputStream = new DataOutputStream(socket.getOutputStream());
-    clientRequest = new ClientRequest();
     gson = new Gson();
     dbConnection = DBConnection.getInstance();
   }
@@ -58,48 +61,39 @@ public class HandleClientConnect implements Runnable  {
     Type clientRequestObject = new TypeToken<ClientRequest>(){}.getType();
     clientRequest = gson.fromJson(jsonData,clientRequestObject);
     Integer clientCode = clientRequest.getCode();
-    String clientAction = clientRequest.getClientAction();
-    String[] params = clientAction.split(",");
+    String data = clientRequest.getData();
 
     switch(clientCode){
-      case(Constant.ADD_USER):
-        String userName = params[0];
-        this.addUser(userName, dataOutputStream);
+      case(RequestCode.USER_JOIN_GAME):
+        String userName = data;
+        handleUserJoinGame(userName);
         break;
-      case (Constant.HANDLE_CLIENT_JOIN_ROOM):
+      case (RequestCode.USER_JOIN_ROOM):
+        String[] params = data.split(",");
         String userId = params[0];
         String roomId = params[1];
-
+        handleUserJoinRoom(userId, roomId);
     }
   }
 
-  public void addUser (String userName, DataOutputStream dataOutputStream) throws IOException {
-    try {
-      userList = new UserList();
-//      dbConnection.connect(Constant.DBURL, Constant.USER, Constant.PASSWORD);
-//      dbQuery = new DBQuery(dbConnection.getConnection());
-      User user = new User(userName, 0, "student");
-      // Send user data
-      String userData = gson.toJson(user);
-      dataOutputStream.writeUTF(userData);
-      dataOutputStream.flush();
-      // Send list user connect
-
-      userList.addUser(user);
-      System.out.println(userList.getUserArrayList());
-      String userDataArray = gson.toJson(userList.getUserArrayList());
-      dataOutputStream.writeUTF(userDataArray);
-      dataOutputStream.flush();
-
-//      String query = "";
-//      ResultSet rs = dbQuery.execQuery(query);
-//      rs.close();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+  public void handleUserJoinGame(String userName) throws IOException {
+    currentUser = new User(userName, 0);
+    System.out.println(currentUser.getUserId());
+    clientRoomManager.addUserToGame(currentUser);
+    dataOutputStream.writeUTF(gson.toJson(currentUser));
+    dataOutputStream.flush();
+    System.out.println("send user id: " + currentUser.getUserId() + " to client");
+    sendDataRoom();
   }
-  public void sendDataRoom() throws Exception {
-    System.out.println(Server.listRooms);
+
+  public void handleUserJoinRoom(String userId, String roomId) {
+    System.out.println(userId + " join " + roomId);
+    Topic selectedRoom = clientRoomManager.getRoomById(roomId);
+    clientRoomManager.addUserToRoom(currentUser, selectedRoom);
+  }
+
+  public void sendDataRoom() throws IOException {
+//    System.out.println(Server.listRooms);
     String roomData = gson.toJson(Server.listRooms);
     dataOutputStream.writeUTF(roomData);
     dataOutputStream.flush();
