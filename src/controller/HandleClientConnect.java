@@ -21,7 +21,6 @@ public class HandleClientConnect implements Runnable  {
   private DBConnection dbConnection;
   private DBQuery dbQuery;
   private User currentUser;
-  private UserList userList;
   private Gson gson;
   private ClientRequest clientRequest;
   RoomManager clientRoomManager;
@@ -73,6 +72,7 @@ public class HandleClientConnect implements Runnable  {
         String userId = params[0];
         String roomId = params[1];
         handleUserJoinRoom(userId, roomId);
+        break;
     }
   }
 
