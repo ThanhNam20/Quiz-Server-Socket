@@ -61,14 +61,13 @@ public class HandleClientConnect implements Runnable  {
     clientRequest = gson.fromJson(jsonData,clientRequestObject);
     Integer clientCode = clientRequest.getCode();
     String data = clientRequest.getData();
-
+    String[] params = data.split(",");
     switch(clientCode){
       case(RequestCode.USER_JOIN_GAME):
         String userName = data;
         handleUserJoinGame(userName);
         break;
       case (RequestCode.USER_JOIN_ROOM):
-        String[] params = data.split(",");
         String userId = params[0];
         String roomId = params[1];
         handleUserJoinRoom(userId, roomId);
@@ -77,7 +76,7 @@ public class HandleClientConnect implements Runnable  {
   }
 
   public void handleUserJoinGame(String userName) throws IOException {
-    currentUser = new User(userName, 0);
+    currentUser = new User(userName, 0, socket);
     System.out.println(currentUser.getUserId());
     clientRoomManager.addUserToGame(currentUser);
     dataOutputStream.writeUTF(gson.toJson(currentUser));

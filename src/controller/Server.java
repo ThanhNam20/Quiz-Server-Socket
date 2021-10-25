@@ -17,7 +17,7 @@ public class Server {
   public static ArrayList<Topic> listRooms;
   private List<HandleClientConnect> list = new ArrayList<>();
   private ExecutorService pool = Executors.newFixedThreadPool(10);
-  RoomManager roomManager;
+  private RoomManager roomManager;
 
   public Server() {}
   private void execute() {

@@ -8,5 +8,6 @@ public class Constant {
    public final static Integer SERVERPORT = 1234;
    public final static String SERVER_ADDRESS = "localhost";
    public final static Integer MIN_CLIENT_CONNECT = 2;
-
+   public final static Integer MIN_CLIENT_IN_ROOM = 2;
+   public final static Integer ROOM_NUMBER = 6;
 }
