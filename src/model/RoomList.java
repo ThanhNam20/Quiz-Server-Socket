@@ -33,7 +33,7 @@ public class RoomList {
   }
 
   public ArrayList<Topic> getRoomArrayList() {
-    return this.roomArrayList;
+    return roomArrayList;
   }
 
 }

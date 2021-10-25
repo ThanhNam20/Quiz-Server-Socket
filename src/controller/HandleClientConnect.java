@@ -38,9 +38,9 @@ public class HandleClientConnect implements Runnable  {
   @Override
   public void run() {
     try {
-      while(true ){
+      while(true){
         String jsonData = dataInputStream.readUTF();
-        clientAction(jsonData, dataOutputStream);
+        clientAction(jsonData);
       }
     } catch (IOException e) {
       e.printStackTrace();
@@ -57,7 +57,7 @@ public class HandleClientConnect implements Runnable  {
     }
   }
 
-  public void clientAction(String jsonData, DataOutputStream dataOutputStream) throws IOException {
+  public void clientAction(String jsonData) throws IOException {
     Type clientRequestObject = new TypeToken<ClientRequest>(){}.getType();
     clientRequest = gson.fromJson(jsonData,clientRequestObject);
     Integer clientCode = clientRequest.getCode();
