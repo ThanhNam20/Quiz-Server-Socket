@@ -25,7 +25,6 @@ public class RoomManager {
            roomMap.put(room, new ArrayList<User>());
        });
        userMap = new HashMap<String, User>();
-
     }
 
     public void addUserToGame(User user) {
@@ -42,22 +41,21 @@ public class RoomManager {
         if(topicUser.size() >= Constant.MIN_CLIENT_IN_ROOM){
             dataOutputStream.writeUTF("0");
             dataOutputStream.flush();
-            dataOutputStream.close();
             return;
         }
+        user.setRoomId(topic.getTopicId());
         topicUser.add(user);
         System.out.println("Add user " + user.getUserId() + " joined room " + topic.getTopicId());
         System.out.println("Room " + topic.getTopicId() + " has " + topicUser.size() + " users");
         dataOutputStream.writeUTF("1");
         dataOutputStream.flush();
-        dataOutputStream.close();
         handleRoomStart(topicUser, topic);
     }
 
     public void handleRoomStart(List<User> userArrayList, Topic topic){
         if(userArrayList.size()< Constant.MIN_CLIENT_IN_ROOM) return;
         HandleMultiChoiceThread handleMultiChoiceThread = new HandleMultiChoiceThread(userArrayList, topic);
-        pool.execute(handleMultiChoiceThread);
+        handleMultiChoiceThread.getDataAndSendUser();
     }
 
     public void removeUser(User user, Topic topic) {

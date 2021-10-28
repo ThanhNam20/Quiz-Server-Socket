@@ -11,6 +11,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.Socket;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
 public class HandleClientConnect implements Runnable  {
@@ -56,7 +57,7 @@ public class HandleClientConnect implements Runnable  {
     }
   }
 
-  public void clientAction(String jsonData) throws IOException {
+  public void clientAction(String jsonData) throws Exception {
     Type clientRequestObject = new TypeToken<ClientRequest>(){}.getType();
     clientRequest = gson.fromJson(jsonData,clientRequestObject);
     Integer clientCode = clientRequest.getCode();
@@ -72,30 +73,54 @@ public class HandleClientConnect implements Runnable  {
         String roomId = params[1];
         handleUserJoinRoom(userId, roomId);
         break;
+      case (RequestCode.USER_SUBMIT_ANSWER):
+        String userAnswerId = params[0]; // is userId but same name with other case;
+        String answerId = params[1];
+        handleUserSubmitAnswer(userAnswerId, answerId);
     }
   }
-
+  // Case 1
   public void handleUserJoinGame(String userName) throws IOException {
-    currentUser = new User(userName, 0, socket);
+    currentUser = new User(userName, 0);
     System.out.println(currentUser.getUserId());
-    clientRoomManager.addUserToGame(currentUser);
     dataOutputStream.writeUTF(gson.toJson(currentUser));
     dataOutputStream.flush();
+    currentUser.setSocket(socket);
+    clientRoomManager.addUserToGame(currentUser);
     System.out.println("send user id: " + currentUser.getUserId() + " to client");
     sendDataRoom();
   }
 
-  public void handleUserJoinRoom(String userId, String roomId) {
+  public void sendDataRoom() throws IOException {
+  // System.out.println(Server.listRooms);
+    String roomData = gson.toJson(Server.listRooms);
+    dataOutputStream.writeUTF(roomData);
+    dataOutputStream.flush();
+  }
+  // Case 2
+  public void handleUserJoinRoom(String userId, String roomId) throws IOException {
     System.out.println(userId + " join " + roomId);
     Topic selectedRoom = clientRoomManager.getRoomById(roomId);
     clientRoomManager.addUserToRoom(currentUser, selectedRoom);
   }
+  // Case 3
+  public void handleUserSubmitAnswer(String userId, String answerId) throws Exception {
+    dbConnection.connect(Constant.DBURL, Constant.USER, Constant.PASSWORD);
+    dbQuery = new DBQuery(dbConnection.getConnection());
+    String query = "select is_true from answer where answer_id ="+ answerId;
+    ResultSet rs = dbQuery.execQuery(query);
+    System.out.println(rs);
+    User user = clientRoomManager.getUserById(userId);
+    if(true){
+      user.setUserPoint(user.getUserPoint()+1);
+      return;
+    }
+    return;
+  }
 
-  public void sendDataRoom() throws IOException {
-//    System.out.println(Server.listRooms);
-    String roomData = gson.toJson(Server.listRooms);
-    dataOutputStream.writeUTF(roomData);
-    dataOutputStream.flush();
+  // Case 4
+  public void handleUserSubmitRequestRankingChart(String roomId){
+
   }
 
 }

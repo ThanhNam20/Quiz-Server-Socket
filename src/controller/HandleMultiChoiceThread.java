@@ -9,7 +9,7 @@ import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HandleMultiChoiceThread implements Runnable{
+public class HandleMultiChoiceThread {
   private List<User> userArrayList;
   private Topic topic;
   private DBConnection dbConnection;
@@ -33,10 +33,10 @@ public class HandleMultiChoiceThread implements Runnable{
 
   }
 
-
-
-  @Override
-  public void run() {
+  public void getDataAndSendUser(){
 
   }
+
+
+
 }

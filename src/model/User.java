@@ -9,13 +9,24 @@ public class User implements Serializable {
   private String userName;
   private Integer userPoint;
   private Socket socket;
+  private Integer roomId;
 
-  public User(String userName, Integer userPoint, Socket socket) {
+  public Integer getRoomId() {
+    return roomId;
+  }
+
+  public void setRoomId(Integer roomId) {
+    this.roomId = roomId;
+  }
+
+  public User(String userName, Integer userPoint) {
     this.userId = UUID.randomUUID().toString().replace("-", "");
     this.userName = userName;
     this.userPoint = userPoint;
-    this.socket = socket;
+    this.socket =null;
   }
+
+
 
   public Socket getSocket() {
     return socket;
