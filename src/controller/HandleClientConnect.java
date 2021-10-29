@@ -13,6 +13,7 @@ import java.lang.reflect.Type;
 import java.net.Socket;
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.List;
 
 public class HandleClientConnect implements Runnable  {
   private Socket socket;
@@ -77,6 +78,12 @@ public class HandleClientConnect implements Runnable  {
         String userAnswerId = params[0]; // is userId but same name with other case;
         String answerId = params[1];
         handleUserSubmitAnswer(userAnswerId, answerId);
+        break;
+
+      case (RequestCode.USER_REQUEST_RAKING_CHART):
+        String userIdRequestChart = params[0];
+        String roomIdRequestChart = params[1];
+        handleUserSubmitRequestRankingChart(userIdRequestChart, roomIdRequestChart);
     }
   }
   // Case 1
@@ -119,9 +126,13 @@ public class HandleClientConnect implements Runnable  {
   }
 
   // Case 4
-  public void handleUserSubmitRequestRankingChart(String roomId){
+  public void handleUserSubmitRequestRankingChart(String userId, String topicId){
+    Topic topic = clientRoomManager.getRoomById(topicId);
+    List<User> listClientInRoom = clientRoomManager.getUserInRoom(topic);
 
   }
+
+
 
 }
 

@@ -35,6 +35,7 @@ public class RoomManager {
         return userMap.get(userId);
     }
 
+
     public void addUserToRoom(User user, Topic topic) throws IOException {
         DataOutputStream dataOutputStream = new DataOutputStream(user.getSocket().getOutputStream());
         List<User> topicUser = roomMap.get(topic);
@@ -85,6 +86,13 @@ public class RoomManager {
         }
         return null;
     }
+
+    public List<User> getUserInRoom(Topic topic){
+      List<User> userList = roomMap.get(topic);
+      return userList;
+    }
+
+    
 
 
 }
