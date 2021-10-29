@@ -84,6 +84,7 @@ public class HandleClientConnect implements Runnable  {
         String userIdRequestChart = params[0];
         String roomIdRequestChart = params[1];
         handleUserSubmitRequestRankingChart(userIdRequestChart, roomIdRequestChart);
+        break;
     }
   }
   // Case 1
