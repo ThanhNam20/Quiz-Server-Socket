@@ -7,6 +7,7 @@ import model.User;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,27 +37,28 @@ public class RoomManager {
     }
 
 
-    public void addUserToRoom(User user, Topic topic) throws IOException {
+    public void addUserToRoom(User user, Topic topic) throws IOException, SQLException {
         DataOutputStream dataOutputStream = new DataOutputStream(user.getSocket().getOutputStream());
         List<User> topicUser = roomMap.get(topic);
         user.setRoomId(topic.getTopicId());
         topicUser.add(user);
         System.out.println("Add user " + user.getUserId() + " joined room " + topic.getTopicId());
         System.out.println("Room " + topic.getTopicId() + " has " + topicUser.size() + " users");
-        if(topicUser.size() < Constant.MAX_NUMBER_CLIENT_IN_ROOM){
-            dataOutputStream.writeUTF("0");
-            dataOutputStream.flush();
-            return;
-        }
-        dataOutputStream.writeUTF("1");
-        dataOutputStream.flush();
-        handleRoomStart(topicUser, topic);
+//        if(topicUser.size() < Constant.MAX_NUMBER_CLIENT_IN_ROOM){
+//            dataOutputStream.writeUTF("0");
+//            dataOutputStream.flush();
+//            return;
+//        }
+//        dataOutputStream.writeUTF("1");
+//        dataOutputStream.flush();
+         handleRoomStart(topicUser, topic);
     }
 
-    public void handleRoomStart(List<User> userArrayList, Topic topic){
-        if(userArrayList.size() < Constant.MAX_NUMBER_CLIENT_IN_ROOM) return;
+    public void handleRoomStart(List<User> userArrayList, Topic topic) throws SQLException {
+//        if(userArrayList.size() < Constant.MAX_NUMBER_CLIENT_IN_ROOM) return;
         HandleMultiChoiceThread handleMultiChoiceThread = new HandleMultiChoiceThread(userArrayList, topic);
-        handleMultiChoiceThread.getDataAndSendUser();
+        String test = handleMultiChoiceThread.getQuestionByTopic();
+        System.out.println(test);
     }
 
     public void removeUser(User user, Topic topic) {

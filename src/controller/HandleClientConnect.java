@@ -12,7 +12,9 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.net.Socket;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HandleClientConnect implements Runnable  {
@@ -106,7 +108,7 @@ public class HandleClientConnect implements Runnable  {
     dataOutputStream.flush();
   }
   // Case 2
-  public void handleUserJoinRoom(String userId, String roomId) throws IOException {
+  public void handleUserJoinRoom(String userId, String roomId) throws IOException, SQLException {
     System.out.println(userId + " join " + roomId);
     Topic selectedRoom = clientRoomManager.getRoomById(roomId);
     clientRoomManager.addUserToRoom(currentUser, selectedRoom);
@@ -115,25 +117,40 @@ public class HandleClientConnect implements Runnable  {
   public void handleUserSubmitAnswer(String userId, String answerId) throws Exception {
     dbConnection.connect(Constant.DBURL, Constant.USER, Constant.PASSWORD);
     dbQuery = new DBQuery(dbConnection.getConnection());
-    String query = "select is_true from answer where answer_id ="+ answerId;
+    String query = "select * from ltmquiz.answer where answer_id = "+ answerId;
     ResultSet rs = dbQuery.execQuery(query);
     System.out.println(rs);
-    User user = clientRoomManager.getUserById(userId);
-    if(true){
-      user.setUserPoint(user.getUserPoint()+1);
-      return;
+    Answer answer = new Answer();
+    if(rs.next()){
+      answer = new Answer(rs.getInt("answer_id"),rs.getString("answer_title"), rs.getInt("is_true"));
     }
-    return;
+    boolean answerIsTrue;
+    if(answer.isIs_true() == 1){
+      answerIsTrue = true;
+    }else {
+      answerIsTrue = false;
+    }
+    System.out.println(answerIsTrue);
+//    User user = clientRoomManager.getUserById(userId);
+//    if(answerIsTrue){
+//      user.setUserPoint(user.getUserPoint()+1);
+//    }
+
+//    Gson gson = new Gson();
+//    String sendData =  gson.toJson(user);
+//    System.out.println(sendData);
+    rs.close();
   }
 
   // Case 4
-  public void handleUserSubmitRequestRankingChart(String userId, String topicId){
+  public void handleUserSubmitRequestRankingChart(String userId, String topicId) throws IOException {
     Topic topic = clientRoomManager.getRoomById(topicId);
     List<User> listClientInRoom = clientRoomManager.getUserInRoom(topic);
-
+    Collections.sort(listClientInRoom);
+    String listClientInRoomJson = gson.toJson(listClientInRoom);
+    dataOutputStream.writeUTF(listClientInRoomJson);
+    dataOutputStream.flush();
   }
-
-
 
 }
 

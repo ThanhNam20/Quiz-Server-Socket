@@ -3,11 +3,14 @@ package controller;
 import constant.Constant;
 import model.RoomList;
 import model.Topic;
+import model.User;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -43,7 +46,7 @@ public class Server {
     }
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     listSocket = new ArrayList<>();
     listRooms = new ArrayList<>();
     Server server = new Server();
