@@ -46,20 +46,10 @@ public class HandleMultiChoiceThread {
     }
     String answerInRoom = getAnswerQuestion(listQuestionId);
     String questionInRoom = gson.toJson(questionArrayList);
-    return answerInRoom;
+    return questionInRoom+","+answerInRoom;
   }
 
   public String getAnswerQuestion(ArrayList<Integer> listQuestionId )throws SQLException{
-//    dbQuery = new DBQuery(dbConnection.getConnection());
-//    String query = "select * from answer where answer.question_id = "+ listQuestionId.get(0);
-//    System.out.println(query);
-//    ResultSet rs = dbQuery.execQuery(query);
-//    System.out.println(rs);
-//    while(rs.next()){
-//      answerArrayList.add(new Answer(rs.getInt("answer_id"), rs.getString("answer_title")));
-//    }
-//    rs.close();
-    
     listQuestionId.forEach((item) -> {
       dbQuery = new DBQuery(dbConnection.getConnection());
       String query = "select * from answer where answer.question_id = "+ item ;
