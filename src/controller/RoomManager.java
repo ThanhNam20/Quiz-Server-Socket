@@ -6,25 +6,43 @@ import model.User;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class RoomManager {
+    private DBConnection dbConnection;
+    private DBQuery dbQuery;
     private static HashMap<Topic, List<User>> roomMap;
     private static HashMap<String, User> userMap;
-    private DataOutputStream dataOutputStream;
-    private ExecutorService pool = Executors.newFixedThreadPool(Constant.ROOM_NUMBER);
-    public RoomManager(List<Topic> roomList) {
-        roomMap = new HashMap<Topic, List<User>>();
-       roomList.forEach(room -> {
-           roomMap.put(room, new ArrayList<User>());
-       });
-       userMap = new HashMap<String, User>();
+    public RoomManager() {
+        getTopicData();
+        userMap = new HashMap<>();
+    }
+
+    private void getTopicData() {
+        roomMap = new HashMap<>();
+        dbConnection = DBConnection.getInstance();
+        dbQuery = new DBQuery(dbConnection.getConnection());
+        String query = "select * from topic";
+        ResultSet rs = null;
+        try {
+            rs = dbQuery.execQuery(query);
+            while(rs.next()) {
+                Topic topic = new Topic(
+                    rs.getInt("topic_id"),
+                    rs.getString("topic_name"),
+                    rs.getInt("topic_question_count")
+                );
+                roomMap.put(topic, new ArrayList<>()); // <Topic, List<User>>
+            }
+            rs.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void addUserToGame(User user) {
@@ -34,7 +52,6 @@ public class RoomManager {
     public User getUserById(String userId) {
         return userMap.get(userId);
     }
-
 
     public void addUserToRoom(User user, Topic topic) throws IOException {
         DataOutputStream dataOutputStream = new DataOutputStream(user.getSocket().getOutputStream());
@@ -59,25 +76,6 @@ public class RoomManager {
         handleMultiChoiceThread.getDataAndSendUser();
     }
 
-    public void removeUser(User user, Topic topic) {
-        List<User> topicUser = roomMap.get(topic);
-        topicUser.remove(user);
-    }
-
-    public boolean isJoin(User user, Topic topic) {
-        List<User> topicUsers = roomMap.get(topic);
-        return topicUsers.contains(user);
-    }
-
-    public boolean isOpen(Topic topic){
-        List<User> userList = roomMap.get(topic);
-        return !userList.isEmpty();
-    }
-
-    public void closeRoom(Topic topic){
-        roomMap.remove(topic);
-    }
-
     public Topic getRoomById(String roomId) {
         for (Topic room : roomMap.keySet()) {
             if (room.getTopicId() == Integer.parseInt(roomId)) {
@@ -92,7 +90,9 @@ public class RoomManager {
       return userList;
     }
 
-    
-
-
+    public List<Topic> getTopicList() {
+        List<Topic> topicList = new ArrayList<>();
+        topicList.addAll(roomMap.keySet());
+        return topicList;
+    }
 }

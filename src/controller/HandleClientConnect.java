@@ -101,7 +101,7 @@ public class HandleClientConnect implements Runnable  {
 
   public void sendDataRoom() throws IOException {
   // System.out.println(Server.listRooms);
-    String roomData = gson.toJson(Server.listRooms);
+    String roomData = gson.toJson(clientRoomManager.getTopicList());
     dataOutputStream.writeUTF(roomData);
     dataOutputStream.flush();
   }
