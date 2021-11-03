@@ -2,7 +2,6 @@ package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class Question implements Serializable{
   private String question_id;
@@ -33,8 +32,8 @@ public class Question implements Serializable{
   }
 
   private ArrayList<Answer> answers;
-  public Question( String question_name, ArrayList<Answer> answers) {
-    this.question_id = UUID.randomUUID().toString();
+  public Question( String question_id ,String question_name, ArrayList<Answer> answers) {
+    this.question_id = question_id;
     this.question_name = question_name;
     this.answers = answers;
   }

@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="QuizzProject:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/QuizzProject_jar</output-path>
+    <root id="archive" name="QuizzProject.jar">
+      <element id="module-output" name="QuizzProject" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/mysql-connector-java-8.0.26.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/gson-2.8.8.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
