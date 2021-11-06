@@ -1,23 +1,17 @@
 package controller;
 
 import constant.Constant;
-import model.RoomList;
-import model.Topic;
-import model.User;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server {
   public static ArrayList<Socket> listSocket;
-  public static ArrayList<Topic> listRooms;
   private List<HandleClientConnect> list = new ArrayList<>();
   private ExecutorService pool = Executors.newFixedThreadPool(10);
   private RoomManager roomManager;
@@ -27,9 +21,7 @@ public class Server {
     try  {
       ServerSocket serverSocket = new ServerSocket(Constant.SERVERPORT);
       System.out.println("Listening...");
-      RoomList roomList = new RoomList();
-      listRooms = roomList.getRoomArrayList();
-      roomManager = new RoomManager(listRooms);
+      roomManager = new RoomManager();
       while(!(serverSocket.isClosed())){
         Socket socket = serverSocket.accept();
         listSocket.add(socket);
@@ -46,9 +38,8 @@ public class Server {
     }
   }
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
     listSocket = new ArrayList<>();
-    listRooms = new ArrayList<>();
     Server server = new Server();
     server.execute();
   }
