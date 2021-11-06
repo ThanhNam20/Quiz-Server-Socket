@@ -74,6 +74,7 @@ public class HandleClientConnect implements Runnable  {
       case (RequestCode.USER_JOIN_ROOM):
         String userId = params[0];
         String roomId = params[1];
+        System.out.println("RoomId"+ roomId);
         handleUserJoinRoom(userId, roomId);
         break;
       case (RequestCode.USER_SUBMIT_ANSWER):
@@ -103,7 +104,7 @@ public class HandleClientConnect implements Runnable  {
 
   public void sendDataRoom() throws IOException {
   // System.out.println(Server.listRooms);
-    String roomData = gson.toJson(clientRoomManager.getTopicList());
+    String roomData = gson.toJson(clientRoomManager.getRoomList());
     dataOutputStream.writeUTF(roomData);
     dataOutputStream.flush();
   }
@@ -117,7 +118,7 @@ public class HandleClientConnect implements Runnable  {
   public void handleUserSubmitAnswer(String userId, String answerId) throws Exception {
     dbConnection.connect(Constant.DBURL, Constant.USER, Constant.PASSWORD);
     dbQuery = new DBQuery(dbConnection.getConnection());
-    String query = "select * from ltmquiz.answer where answer_id = "+ answerId;
+    String query = "select * from answer where answer_id = "+ answerId;
     ResultSet rs = dbQuery.execQuery(query);
     System.out.println(rs);
     Answer answer = new Answer();

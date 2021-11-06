@@ -2,29 +2,28 @@ package model;
 
 import java.io.Serializable;
 
-public class Room implements Serializable {
-    private int topicId;
-    private String topicName;
+public class Room {
+    private int roomId;
+    private String roomName;
 
-    public Room(int topicId, String topicName) {
-        this.topicId = topicId;
-        this.topicName = topicName;
+    public Room(int roomId, String roomName) {
+        this.roomId = roomId;
+        this.roomName = roomName;
     }
 
-    public int getTopicId() {
-        return topicId;
+    public int getRoomId() {
+        return roomId;
     }
 
-    public void setTopicId(int topicId) {
-        this.topicId = topicId;
+    public void setRoomId(int roomId) {
+        this.roomId = roomId;
     }
 
-    public String getTopicName() {
-        return topicName;
+    public String getRoomName() {
+        return roomName;
     }
 
-    public void setTopicName(String topicName) {
-        this.topicName = topicName;
+    public void setRoomName(String roomName) {
+        this.roomName = roomName;
     }
-
 }

@@ -34,10 +34,10 @@ public class HandleMultiChoiceThread {
 
   public String getQuestionByTopic() throws SQLException {
     dbQuery = new DBQuery(dbConnection.getConnection());
-    String query = "select * from question where question.topic_id ="+ room.getTopicId();
+    String query = "select * from question where question.room_id ="+ room.getRoomId();
     ResultSet rs = dbQuery.execQuery(query);
     while(rs.next()) {
-      questionArrayList.add(new Question(rs.getInt("question_id"), rs.getString("question_title"), rs.getInt("topic_id")));
+      questionArrayList.add(new Question(rs.getInt("question_id"), rs.getString("question_title"), rs.getInt("room_id")));
     }
     rs.close();
     listQuestionId = new ArrayList<>();

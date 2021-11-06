@@ -54,10 +54,10 @@ public class RoomManager {
     public void addUserToRoom(User user, Room room) throws IOException, SQLException {
         DataOutputStream dataOutputStream = new DataOutputStream(user.getSocket().getOutputStream());
         List<User> topicUser = roomMap.get(room);
-        user.setRoomId(room.getTopicId());
+        user.setRoomId(room.getRoomId());
         topicUser.add(user);
-        System.out.println("Add user " + user.getUserId() + " joined room " + room.getTopicId());
-        System.out.println("Room " + room.getTopicId() + " has " + topicUser.size() + " users");
+        System.out.println("Add user " + user.getUserId() + " joined room " + room.getRoomId());
+        System.out.println("Room " + room.getRoomId() + " has " + topicUser.size() + " users");
         if(topicUser.size() < Constant.MAX_NUMBER_CLIENT_IN_ROOM){
             dataOutputStream.writeUTF("0");
             dataOutputStream.flush();
@@ -69,14 +69,15 @@ public class RoomManager {
     }
 
     public void handleRoomStart(List<User> userArrayList, Room room) throws SQLException {
-        if(userArrayList.size() < Constant.MAX_NUMBER_CLIENT_IN_ROOM) return;
+//        if(userArrayList.size() < Constant.MAX_NUMBER_CLIENT_IN_ROOM) return;
         HandleMultiChoiceThread handleMultiChoiceThread = new HandleMultiChoiceThread(userArrayList, room);
-        handleMultiChoiceThread.getQuestionByTopic();
+        String data = handleMultiChoiceThread.getQuestionByTopic();
+        System.out.println(data);
     }
 
     public Room getRoomById(String roomId) {
         for (Room room : roomMap.keySet()) {
-            if (room.getTopicId() == Integer.parseInt(roomId)) {
+            if (room.getRoomId() == Integer.parseInt(roomId)) {
                 return room;
             }
         }
@@ -88,7 +89,7 @@ public class RoomManager {
       return userList;
     }
 
-    public List<Room> getTopicList() {
+    public List<Room> getRoomList() {
         List<Room> roomList = new ArrayList<>();
         roomList.addAll(roomMap.keySet());
         return roomList;
