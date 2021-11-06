@@ -17,14 +17,15 @@ public class RoomManager {
     private DBQuery dbQuery;
     private static HashMap<Room, List<User>> roomMap;
     private static HashMap<String, User> userMap;
-    public RoomManager() {
-//        getTopicData();
+    public RoomManager() throws Exception {
+        dbConnection = DBConnection.getInstance();
+        getTopicData();
         userMap = new HashMap<>();
     }
 
-    private void getTopicData() {
+    private void getTopicData() throws Exception {
         roomMap = new HashMap<>();
-        dbConnection = DBConnection.getInstance();
+        dbConnection.connect(Constant.DBURL, Constant.USER, Constant.PASSWORD);
         dbQuery = new DBQuery(dbConnection.getConnection());
         String query = "select * from room";
         ResultSet rs = null;
