@@ -42,7 +42,6 @@ public class RoomManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
     public void addUserToGame(User user) {
@@ -53,7 +52,7 @@ public class RoomManager {
         return userMap.get(userId);
     }
 
-    public void addUserToRoom(User user, Topic topic) throws IOException {
+    public void addUserToRoom(User user, Topic topic) throws IOException, SQLException {
         DataOutputStream dataOutputStream = new DataOutputStream(user.getSocket().getOutputStream());
         List<User> topicUser = roomMap.get(topic);
         user.setRoomId(topic.getTopicId());
@@ -70,10 +69,10 @@ public class RoomManager {
         handleRoomStart(topicUser, topic);
     }
 
-    public void handleRoomStart(List<User> userArrayList, Topic topic){
+    public void handleRoomStart(List<User> userArrayList, Topic topic) throws SQLException {
         if(userArrayList.size() < Constant.MAX_NUMBER_CLIENT_IN_ROOM) return;
         HandleMultiChoiceThread handleMultiChoiceThread = new HandleMultiChoiceThread(userArrayList, topic);
-        handleMultiChoiceThread.getDataAndSendUser();
+        handleMultiChoiceThread.getQuestionByTopic();
     }
 
     public Topic getRoomById(String roomId) {
