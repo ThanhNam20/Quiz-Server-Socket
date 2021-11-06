@@ -1,7 +1,7 @@
 package controller;
 
 import constant.Constant;
-import model.Topic;
+import model.Room;
 import model.User;
 
 import java.io.DataOutputStream;
@@ -15,10 +15,10 @@ import java.util.List;
 public class RoomManager {
     private DBConnection dbConnection;
     private DBQuery dbQuery;
-    private static HashMap<Topic, List<User>> roomMap;
+    private static HashMap<Room, List<User>> roomMap;
     private static HashMap<String, User> userMap;
     public RoomManager() {
-        getTopicData();
+//        getTopicData();
         userMap = new HashMap<>();
     }
 
@@ -26,17 +26,15 @@ public class RoomManager {
         roomMap = new HashMap<>();
         dbConnection = DBConnection.getInstance();
         dbQuery = new DBQuery(dbConnection.getConnection());
-        String query = "select * from topic";
+        String query = "select * from room";
         ResultSet rs = null;
         try {
             rs = dbQuery.execQuery(query);
             while(rs.next()) {
-                Topic topic = new Topic(
-                    rs.getInt("topic_id"),
-                    rs.getString("topic_name"),
-                    rs.getInt("topic_question_count")
-                );
-                roomMap.put(topic, new ArrayList<>()); // <Topic, List<User>>
+                Room room = new Room(
+                    rs.getInt("room_id"),
+                    rs.getString("room_name"));
+                roomMap.put(room, new ArrayList<>()); // <Topic, List<User>>
             }
             rs.close();
         } catch (SQLException e) {
@@ -52,13 +50,13 @@ public class RoomManager {
         return userMap.get(userId);
     }
 
-    public void addUserToRoom(User user, Topic topic) throws IOException, SQLException {
+    public void addUserToRoom(User user, Room room) throws IOException, SQLException {
         DataOutputStream dataOutputStream = new DataOutputStream(user.getSocket().getOutputStream());
-        List<User> topicUser = roomMap.get(topic);
-        user.setRoomId(topic.getTopicId());
+        List<User> topicUser = roomMap.get(room);
+        user.setRoomId(room.getTopicId());
         topicUser.add(user);
-        System.out.println("Add user " + user.getUserId() + " joined room " + topic.getTopicId());
-        System.out.println("Room " + topic.getTopicId() + " has " + topicUser.size() + " users");
+        System.out.println("Add user " + user.getUserId() + " joined room " + room.getTopicId());
+        System.out.println("Room " + room.getTopicId() + " has " + topicUser.size() + " users");
         if(topicUser.size() < Constant.MAX_NUMBER_CLIENT_IN_ROOM){
             dataOutputStream.writeUTF("0");
             dataOutputStream.flush();
@@ -66,17 +64,17 @@ public class RoomManager {
         }
         dataOutputStream.writeUTF("1");
         dataOutputStream.flush();
-        handleRoomStart(topicUser, topic);
+        handleRoomStart(topicUser, room);
     }
 
-    public void handleRoomStart(List<User> userArrayList, Topic topic) throws SQLException {
+    public void handleRoomStart(List<User> userArrayList, Room room) throws SQLException {
         if(userArrayList.size() < Constant.MAX_NUMBER_CLIENT_IN_ROOM) return;
-        HandleMultiChoiceThread handleMultiChoiceThread = new HandleMultiChoiceThread(userArrayList, topic);
+        HandleMultiChoiceThread handleMultiChoiceThread = new HandleMultiChoiceThread(userArrayList, room);
         handleMultiChoiceThread.getQuestionByTopic();
     }
 
-    public Topic getRoomById(String roomId) {
-        for (Topic room : roomMap.keySet()) {
+    public Room getRoomById(String roomId) {
+        for (Room room : roomMap.keySet()) {
             if (room.getTopicId() == Integer.parseInt(roomId)) {
                 return room;
             }
@@ -84,14 +82,14 @@ public class RoomManager {
         return null;
     }
 
-    public List<User> getUserInRoom(Topic topic){
-      List<User> userList = roomMap.get(topic);
+    public List<User> getUserInRoom(Room room){
+      List<User> userList = roomMap.get(room);
       return userList;
     }
 
-    public List<Topic> getTopicList() {
-        List<Topic> topicList = new ArrayList<>();
-        topicList.addAll(roomMap.keySet());
-        return topicList;
+    public List<Room> getTopicList() {
+        List<Room> roomList = new ArrayList<>();
+        roomList.addAll(roomMap.keySet());
+        return roomList;
     }
 }

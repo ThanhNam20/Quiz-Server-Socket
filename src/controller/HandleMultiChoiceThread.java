@@ -12,7 +12,7 @@ import java.util.List;
 
 public class HandleMultiChoiceThread {
   private List<User> userArrayList;
-  private Topic topic;
+  private Room room;
   private DBConnection dbConnection;
   private DBQuery dbQuery;
   private ArrayList<Question> questionArrayList;
@@ -22,10 +22,10 @@ public class HandleMultiChoiceThread {
   private DataOutputStream dataOutputStream;
   private Gson gson;
   private ArrayList<Integer> listQuestionId;
-  public HandleMultiChoiceThread(List<User> userArrayList, Topic topic) {
+  public HandleMultiChoiceThread(List<User> userArrayList, Room room) {
     dbConnection = DBConnection.getInstance();
     this.userArrayList = userArrayList;
-    this.topic = topic;
+    this.room = room;
     questionArrayList = new ArrayList<>();
     answerArrayList = new ArrayList<>();
     listAnswers = new ArrayList<ArrayList<Answer>>();
@@ -34,7 +34,7 @@ public class HandleMultiChoiceThread {
 
   public String getQuestionByTopic() throws SQLException {
     dbQuery = new DBQuery(dbConnection.getConnection());
-    String query = "select * from question where question.topic_id ="+ topic.getTopicId();
+    String query = "select * from question where question.topic_id ="+ room.getTopicId();
     ResultSet rs = dbQuery.execQuery(query);
     while(rs.next()) {
       questionArrayList.add(new Question(rs.getInt("question_id"), rs.getString("question_title"), rs.getInt("topic_id")));

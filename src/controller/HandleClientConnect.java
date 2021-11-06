@@ -110,7 +110,7 @@ public class HandleClientConnect implements Runnable  {
   // Case 2
   public void handleUserJoinRoom(String userId, String roomId) throws IOException, SQLException {
     System.out.println(userId + " join " + roomId);
-    Topic selectedRoom = clientRoomManager.getRoomById(roomId);
+    Room selectedRoom = clientRoomManager.getRoomById(roomId);
     clientRoomManager.addUserToRoom(currentUser, selectedRoom);
   }
   // Case 3
@@ -144,8 +144,8 @@ public class HandleClientConnect implements Runnable  {
 
   // Case 4
   public void handleUserSubmitRequestRankingChart(String userId, String topicId) throws IOException {
-    Topic topic = clientRoomManager.getRoomById(topicId);
-    List<User> listClientInRoom = clientRoomManager.getUserInRoom(topic);
+    Room room = clientRoomManager.getRoomById(topicId);
+    List<User> listClientInRoom = clientRoomManager.getUserInRoom(room);
     Collections.sort(listClientInRoom);
     String listClientInRoomJson = gson.toJson(listClientInRoom);
     dataOutputStream.writeUTF(listClientInRoomJson);
