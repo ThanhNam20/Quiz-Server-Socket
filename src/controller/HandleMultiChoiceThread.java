@@ -22,9 +22,8 @@ public class HandleMultiChoiceThread {
   private DataOutputStream dataOutputStream;
   private Gson gson;
   private ArrayList<Integer> listQuestionId;
-  public HandleMultiChoiceThread(List<User> userArrayList, Room room) {
+  public HandleMultiChoiceThread(Room room) {
     dbConnection = DBConnection.getInstance();
-    this.userArrayList = userArrayList;
     this.room = room;
     questionArrayList = new ArrayList<>();
     answerArrayList = new ArrayList<>();
@@ -49,7 +48,7 @@ public class HandleMultiChoiceThread {
     return questionInRoom+","+answerInRoom;
   }
 
-  public String getAnswerQuestion(ArrayList<Integer> listQuestionId )throws SQLException{
+  String getAnswerQuestion(ArrayList<Integer> listQuestionId )throws SQLException{
     listQuestionId.forEach((item) -> {
       dbQuery = new DBQuery(dbConnection.getConnection());
       String query = "select * from answer where answer.question_id = "+ item ;

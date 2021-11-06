@@ -19,13 +19,16 @@ public class User implements Comparable<User> {
     this.roomId = roomId;
   }
 
-  public User(String userName, Integer userPoint) {
+  public User(Socket socket) {
     this.userId = UUID.randomUUID().toString().replace("-", "");
-    this.userName = userName;
-    this.userPoint = userPoint;
+    this.socket = socket;
+    this.userPoint = 0;
   }
 
-
+  public User(String userId, String userName) {
+    this.userId = userId;
+    this.userName = userName;
+  }
 
   public Socket getSocket() {
     return socket;
