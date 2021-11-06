@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class HandleClientConnect implements Runnable  {
-  private Socket socket;
   private DataInputStream dataInputStream;
   private DataOutputStream dataOutputStream;
   private ArrayList<Question> questionArrayList;
@@ -30,10 +29,10 @@ public class HandleClientConnect implements Runnable  {
   RoomManager clientRoomManager;
 
   public HandleClientConnect(Socket socket, RoomManager roomManager) throws IOException {
-    this.socket = socket;
+    currentUser = new User(socket);
     this.clientRoomManager = roomManager;
-    dataInputStream = new DataInputStream(socket.getInputStream());
-    dataOutputStream = new DataOutputStream(socket.getOutputStream());
+    dataInputStream = new DataInputStream(currentUser.getSocket().getInputStream());
+    dataOutputStream = new DataOutputStream(currentUser.getSocket().getOutputStream());
     gson = new Gson();
     dbConnection = DBConnection.getInstance();
   }
@@ -51,7 +50,7 @@ public class HandleClientConnect implements Runnable  {
       e.printStackTrace();
     } finally {
       try {
-        socket.close();
+        currentUser.getSocket().close();
         dataInputStream.close();
         dataOutputStream.close();
       } catch (IOException e) {
@@ -92,11 +91,10 @@ public class HandleClientConnect implements Runnable  {
   }
   // Case 1
   public void handleUserJoinGame(String userName) throws IOException {
-    currentUser = new User(userName, 0);
+    currentUser.setUserName(userName);
     System.out.println(currentUser.getUserId());
-    dataOutputStream.writeUTF(gson.toJson(currentUser));
+    dataOutputStream.writeUTF(gson.toJson(new User(currentUser.getUserId(), currentUser.getUserName())));
     dataOutputStream.flush();
-    currentUser.setSocket(socket);
     clientRoomManager.addUserToGame(currentUser);
     System.out.println("send user id: " + currentUser.getUserId() + " to client");
     sendDataRoom();
@@ -112,7 +110,13 @@ public class HandleClientConnect implements Runnable  {
   public void handleUserJoinRoom(String userId, String roomId) throws IOException, SQLException {
     System.out.println(userId + " join " + roomId);
     Room selectedRoom = clientRoomManager.getRoomById(roomId);
-    clientRoomManager.addUserToRoom(currentUser, selectedRoom);
+    int code = clientRoomManager.addUserToRoom(currentUser, selectedRoom);
+    dataOutputStream.writeUTF(Integer.toString(code));
+    dataOutputStream.flush();
+    if (code == RequestCode.ROOM_START) {
+      // tim list user trong room => send question
+      clientRoomManager.sendQuestionAndAnswerToRoom(selectedRoom);
+    }
   }
   // Case 3
   public void handleUserSubmitAnswer(String userId, String answerId) throws Exception {

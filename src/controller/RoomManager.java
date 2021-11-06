@@ -1,6 +1,7 @@
 package controller;
 
 import constant.Constant;
+import constant.RequestCode;
 import model.Room;
 import model.User;
 
@@ -17,6 +18,8 @@ public class RoomManager {
     private DBQuery dbQuery;
     private static HashMap<Room, List<User>> roomMap;
     private static HashMap<String, User> userMap;
+
+
     public RoomManager() throws Exception {
         dbConnection = DBConnection.getInstance();
         getTopicData();
@@ -51,28 +54,20 @@ public class RoomManager {
         return userMap.get(userId);
     }
 
-    public void addUserToRoom(User user, Room room) throws IOException, SQLException {
-        DataOutputStream dataOutputStream = new DataOutputStream(user.getSocket().getOutputStream());
+    public int addUserToRoom(User user, Room room) throws IOException, SQLException {
         List<User> topicUser = roomMap.get(room);
         user.setRoomId(room.getRoomId());
-        topicUser.add(user);
         System.out.println("Add user " + user.getUserId() + " joined room " + room.getRoomId());
         System.out.println("Room " + room.getRoomId() + " has " + topicUser.size() + " users");
-        if(topicUser.size() < Constant.MAX_NUMBER_CLIENT_IN_ROOM){
-            dataOutputStream.writeUTF("0");
-            dataOutputStream.flush();
-            return;
+        if (topicUser.size() > Constant.MAX_NUMBER_CLIENT_IN_ROOM) {
+            return RequestCode.ROOM_FULL;
+        } else if (topicUser.size() == Constant.MAX_NUMBER_CLIENT_IN_ROOM - 1) {
+            topicUser.add(user);
+            return RequestCode.ROOM_START;
+        } else {
+            topicUser.add(user);
+            return RequestCode.ROOM_WAIT;
         }
-        dataOutputStream.writeUTF("1");
-        dataOutputStream.flush();
-        handleRoomStart(topicUser, room);
-    }
-
-    public void handleRoomStart(List<User> userArrayList, Room room) throws SQLException {
-//        if(userArrayList.size() < Constant.MAX_NUMBER_CLIENT_IN_ROOM) return;
-        HandleMultiChoiceThread handleMultiChoiceThread = new HandleMultiChoiceThread(userArrayList, room);
-        String data = handleMultiChoiceThread.getQuestionByTopic();
-        System.out.println(data);
     }
 
     public Room getRoomById(String roomId) {
@@ -87,6 +82,25 @@ public class RoomManager {
     public List<User> getUserInRoom(Room room){
       List<User> userList = roomMap.get(room);
       return userList;
+    }
+
+    public void sendQuestionAndAnswerToRoom(Room room) throws SQLException {
+        List<User> userList = roomMap.get(room);
+        HandleMultiChoiceThread handleMultiChoiceThread = new HandleMultiChoiceThread(room);
+        String data = handleMultiChoiceThread.getQuestionByTopic();
+        System.out.println(data);
+
+        userList.forEach(user -> {
+            DataOutputStream dos = null;
+            try {
+                dos = new DataOutputStream(user.getSocket().getOutputStream());
+                dos.writeUTF(data);
+                dos.flush();
+                dos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public List<Room> getRoomList() {
