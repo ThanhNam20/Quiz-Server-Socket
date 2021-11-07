@@ -22,6 +22,17 @@ public class HandleMultiChoiceThread {
   private DataOutputStream dataOutputStream;
   private Gson gson;
   private ArrayList<Integer> listQuestionId;
+  private String answerInRoom;
+  private String questionInRoom;
+
+  public String getAnswerInRoom() {
+    return answerInRoom;
+  }
+
+  public String getQuestionInRoom() {
+    return questionInRoom;
+  }
+
   public HandleMultiChoiceThread(Room room) {
     dbConnection = DBConnection.getInstance();
     this.room = room;
@@ -31,7 +42,7 @@ public class HandleMultiChoiceThread {
     gson = new Gson();
   }
 
-  public String getQuestionByTopic() throws SQLException {
+  public void getQuestionByTopic() throws SQLException {
     dbQuery = new DBQuery(dbConnection.getConnection());
     String query = "select * from question where question.room_id ="+ room.getRoomId();
     ResultSet rs = dbQuery.execQuery(query);
@@ -43,10 +54,10 @@ public class HandleMultiChoiceThread {
     for (Question question: questionArrayList) {
       listQuestionId.add(question.getQuestion_id());
     }
-    String answerInRoom = getAnswerQuestion(listQuestionId);
-    String questionInRoom = gson.toJson(questionArrayList);
-    return questionInRoom+","+answerInRoom;
+    answerInRoom = getAnswerQuestion(listQuestionId);
+    questionInRoom = gson.toJson(questionArrayList);
   }
+
 
   String getAnswerQuestion(ArrayList<Integer> listQuestionId )throws SQLException{
     listQuestionId.forEach((item) -> {

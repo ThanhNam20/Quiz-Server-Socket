@@ -81,22 +81,28 @@ public class RoomManager {
 
     public List<User> getUserInRoom(Room room){
       List<User> userList = roomMap.get(room);
-      return userList;
+      ArrayList<User> userListSendClient = new ArrayList<>();
+      userList.forEach(item ->{
+          userListSendClient.add(new User(item.getUserName(), item.getUserPoint()));
+      });
+      return userListSendClient;
     }
 
     public void sendQuestionAndAnswerToRoom(Room room) throws SQLException {
         List<User> userList = roomMap.get(room);
         HandleMultiChoiceThread handleMultiChoiceThread = new HandleMultiChoiceThread(room);
-        String data = handleMultiChoiceThread.getQuestionByTopic();
-        System.out.println(data);
+        handleMultiChoiceThread.getQuestionByTopic();
+        String questionInRoom = handleMultiChoiceThread.getQuestionInRoom();
+        String answerInRoom = handleMultiChoiceThread.getAnswerInRoom();
 
         userList.forEach(user -> {
             DataOutputStream dos = null;
             try {
                 dos = new DataOutputStream(user.getSocket().getOutputStream());
-                dos.writeUTF(data);
+                dos.writeUTF(questionInRoom);
                 dos.flush();
-                dos.close();
+                dos.writeUTF(answerInRoom);
+                dos.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }

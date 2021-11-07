@@ -27,7 +27,6 @@ public class HandleClientConnect implements Runnable  {
   private Gson gson;
   private ClientRequest clientRequest;
   RoomManager clientRoomManager;
-
   public HandleClientConnect(Socket socket, RoomManager roomManager) throws IOException {
     currentUser = new User(socket);
     this.clientRoomManager = roomManager;
@@ -83,9 +82,8 @@ public class HandleClientConnect implements Runnable  {
         break;
 
       case (RequestCode.USER_REQUEST_RAKING_CHART):
-        String userIdRequestChart = params[0];
-        String roomIdRequestChart = params[1];
-        handleUserSubmitRequestRankingChart(userIdRequestChart, roomIdRequestChart);
+        String roomIdRequestChart = data;
+        handleUserSubmitRequestRankingChart(roomIdRequestChart);
         break;
     }
   }
@@ -135,24 +133,23 @@ public class HandleClientConnect implements Runnable  {
     }else {
       answerIsTrue = false;
     }
-    System.out.println(answerIsTrue);
-//    User user = clientRoomManager.getUserById(userId);
-//    if(answerIsTrue){
-//      user.setUserPoint(user.getUserPoint()+1);
-//    }
-
-//    Gson gson = new Gson();
-//    String sendData =  gson.toJson(user);
-//    System.out.println(sendData);
-    rs.close();
+//    System.out.println(answerIsTrue);
+    User user = clientRoomManager.getUserById(userId);
+    if(answerIsTrue){
+      user.setUserPoint(user.getUserPoint()+1);
+    }
+    Gson gson = new Gson();
+    String sendData =  gson.toJson(user);
+    System.out.println(sendData);
   }
 
   // Case 4
-  public void handleUserSubmitRequestRankingChart(String userId, String topicId) throws IOException {
+  public void handleUserSubmitRequestRankingChart( String topicId) throws IOException {
     Room room = clientRoomManager.getRoomById(topicId);
     List<User> listClientInRoom = clientRoomManager.getUserInRoom(room);
     Collections.sort(listClientInRoom);
     String listClientInRoomJson = gson.toJson(listClientInRoom);
+    System.out.println(listClientInRoomJson);
     dataOutputStream.writeUTF(listClientInRoomJson);
     dataOutputStream.flush();
   }

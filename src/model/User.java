@@ -30,6 +30,11 @@ public class User implements Comparable<User> {
     this.userName = userName;
   }
 
+  public User(String userName, Integer userPoint) {
+    this.userPoint = userPoint;
+    this.userName = userName;
+  }
+
   public Socket getSocket() {
     return socket;
   }
