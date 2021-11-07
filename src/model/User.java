@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.util.UUID;
 
-public class User implements Serializable {
+public class User implements Comparable<User> {
   private String userId;
   private String userName;
   private Integer userPoint;
@@ -19,14 +19,16 @@ public class User implements Serializable {
     this.roomId = roomId;
   }
 
-  public User(String userName, Integer userPoint) {
+  public User(Socket socket) {
     this.userId = UUID.randomUUID().toString().replace("-", "");
-    this.userName = userName;
-    this.userPoint = userPoint;
-    this.socket =null;
+    this.socket = socket;
+    this.userPoint = 0;
   }
 
-
+  public User(String userId, String userName) {
+    this.userId = userId;
+    this.userName = userName;
+  }
 
   public Socket getSocket() {
     return socket;
@@ -60,4 +62,8 @@ public class User implements Serializable {
     this.userPoint = userPoint;
   }
 
+  @Override
+  public int compareTo(User o) {
+    return this.userPoint.compareTo(o.userPoint);
+  }
 }
