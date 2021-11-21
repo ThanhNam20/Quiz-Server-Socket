@@ -79,7 +79,7 @@ public class RoomManager {
         return null;
     }
 
-    public List<User> getUserInRoom(Room room){
+    public ArrayList<User> getUserInRoom(Room room){
       List<User> userList = roomMap.get(room);
       ArrayList<User> userListSendClient = new ArrayList<>();
       userList.forEach(item ->{

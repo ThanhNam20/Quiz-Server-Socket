@@ -17,7 +17,7 @@ public class HandleMultiChoiceThread {
   private DBQuery dbQuery;
   private ArrayList<Question> questionArrayList;
   private ArrayList<Answer> answerArrayList;
-  private ArrayList<ArrayList<Answer>> listAnswers;
+  private ArrayList<ModelAnswerSendUser> listAnswers;
   private DataInputStream dataInputStream;
   private DataOutputStream dataOutputStream;
   private Gson gson;
@@ -38,16 +38,16 @@ public class HandleMultiChoiceThread {
     this.room = room;
     questionArrayList = new ArrayList<>();
     answerArrayList = new ArrayList<>();
-    listAnswers = new ArrayList<ArrayList<Answer>>();
+    listAnswers = new ArrayList<ModelAnswerSendUser>();
     gson = new Gson();
   }
 
   public void getQuestionByTopic() throws SQLException {
     dbQuery = new DBQuery(dbConnection.getConnection());
-    String query = "select * from question where question.room_id ="+ room.getRoomId();
+    String query = "select question.question_id, question.question_title from question where question.room_id ="+ room.getRoomId();
     ResultSet rs = dbQuery.execQuery(query);
     while(rs.next()) {
-      questionArrayList.add(new Question(rs.getInt("question_id"), rs.getString("question_title"), rs.getInt("room_id")));
+      questionArrayList.add(new Question(rs.getInt("question_id"), rs.getString("question_title")));
     }
     rs.close();
     listQuestionId = new ArrayList<>();
@@ -58,11 +58,10 @@ public class HandleMultiChoiceThread {
     questionInRoom = gson.toJson(questionArrayList);
   }
 
-
   String getAnswerQuestion(ArrayList<Integer> listQuestionId )throws SQLException{
     listQuestionId.forEach((item) -> {
       dbQuery = new DBQuery(dbConnection.getConnection());
-      String query = "select * from answer where answer.question_id = "+ item ;
+      String query = "select answer.answer_id, answer.answer_title from answer where answer.question_id = "+ item ;
       System.out.println(query);
       try {
         ResultSet rs = dbQuery.execQuery(query);
@@ -70,7 +69,7 @@ public class HandleMultiChoiceThread {
           answerArrayList.add(new Answer(rs.getInt("answer_id"), rs.getString("answer_title")));
         }
         rs.close();
-        listAnswers.add(answerArrayList);
+        listAnswers.add(new ModelAnswerSendUser(item, answerArrayList));
         answerArrayList = new ArrayList<>();
       } catch (SQLException e) {
         e.printStackTrace();
@@ -78,6 +77,7 @@ public class HandleMultiChoiceThread {
     });
 
     String answerInRoom = gson.toJson(listAnswers);
+    System.out.println(answerInRoom);
     return answerInRoom;
   }
 

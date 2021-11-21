@@ -11,16 +11,18 @@ public class Answer {
   public Answer() {
   }
 
+  public Answer(int answer_id, String answer_title) {
+    this.answer_id = answer_id;
+    this.answer_title = answer_title;
+  }
+
   public Answer(int answer_id, String answer_title, int is_true) {
     this.answer_id = answer_id;
     this.answer_title = answer_title;
     this.is_true = is_true;
   }
 
-  public Answer(int answer_id, String answer_title) {
-    this.answer_id = answer_id;
-    this.answer_title = answer_title;
-  }
+
 
   public int getAnswer_id() {
     return answer_id;

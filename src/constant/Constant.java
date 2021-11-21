@@ -10,4 +10,5 @@ public class Constant {
    public final static Integer MIN_CLIENT_CONNECT = 2;
    public final static Integer MAX_NUMBER_CLIENT_IN_ROOM = 5;
    public final static Integer ROOM_NUMBER = 6;
+   public final static String ERROR_MESSAGE = "PHONG DAY";
 }

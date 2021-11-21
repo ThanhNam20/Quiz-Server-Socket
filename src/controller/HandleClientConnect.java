@@ -115,32 +115,44 @@ public class HandleClientConnect implements Runnable  {
       // tim list user trong room => send question
       clientRoomManager.sendQuestionAndAnswerToRoom(selectedRoom);
     }
+    if(code == RequestCode.ROOM_WAIT) {
+      // Số người trong phòng không đủ thì gửi số người đang trong phòng để cập nhật
+       ArrayList<User> userArrayList = clientRoomManager.getUserInRoom(selectedRoom);
+       String listUserInRoom = gson.toJson(userArrayList);
+       dataOutputStream.writeUTF(listUserInRoom);
+       dataOutputStream.flush();
+    }
+    if(code == RequestCode.ROOM_FULL) {
+      // Phòng vượt quá số người thì gửi message cho user
+      dataOutputStream.writeUTF(Constant.ERROR_MESSAGE);
+      dataOutputStream.flush();
+    }
   }
+
   // Case 3
   public void handleUserSubmitAnswer(String userId, String answerId) throws Exception {
     dbConnection.connect(Constant.DBURL, Constant.USER, Constant.PASSWORD);
     dbQuery = new DBQuery(dbConnection.getConnection());
     String query = "select * from answer where answer_id = "+ answerId;
     ResultSet rs = dbQuery.execQuery(query);
-    System.out.println(rs);
     Answer answer = new Answer();
     if(rs.next()){
       answer = new Answer(rs.getInt("answer_id"),rs.getString("answer_title"), rs.getInt("is_true"));
     }
-    boolean answerIsTrue;
+    String answerIsTrue = null;
     if(answer.isIs_true() == 1){
-      answerIsTrue = true;
+      answerIsTrue = "true";
     }else {
-      answerIsTrue = false;
+      answerIsTrue = "false";
     }
-//    System.out.println(answerIsTrue);
+    System.out.println(answerIsTrue);
     User user = clientRoomManager.getUserById(userId);
-    if(answerIsTrue){
+    if(answerIsTrue.equals("true")){
       user.setUserPoint(user.getUserPoint()+1);
     }
-    Gson gson = new Gson();
-    String sendData =  gson.toJson(user);
-    System.out.println(sendData);
+    dataOutputStream.writeUTF(answerIsTrue);
+    System.out.println(user.getUserPoint());
+    dataOutputStream.flush();
   }
 
   // Case 4
